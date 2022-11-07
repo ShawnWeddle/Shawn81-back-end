@@ -8,7 +8,7 @@ export async function createUserSessionHandler(req: Request, res: Response){
   const user = await validatePassword(req.body);
 
   if(!user){
-    return res.status(401).send("Invalid email or password");
+    return res.status(401).send("Invalid username or password");
   }
 
   const session = await createSession(user._id);
@@ -23,7 +23,9 @@ export async function createUserSessionHandler(req: Request, res: Response){
     {expiresIn: config.get("refreshTokenTtl")} // 1y
   );
 
-  return res.send({accessToken, refreshToken});
+  const username = user.username;
+
+  return res.send({ username, accessToken, refreshToken});
 }
 
 export async function getUserSessionsHandler(req: Request, res: Response){

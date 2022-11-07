@@ -5,7 +5,6 @@ import connect from "./utils/connect";
 import logger from "./utils/logger";
 import userRoutes from "./User/user.routes";
 import sessionRoutes from "./Session/session.routes";
-import productRoutes from "./Product/product.routes";
 import messageRoutes from "./Message/message.routes";
 
 import deserializeUser from "./middleware/deserializeUser";
@@ -31,6 +30,5 @@ app.listen(port, async ()=> {
 
   userRoutes(app);
   sessionRoutes(app);
-  productRoutes(app);
   messageRoutes(app);
 });

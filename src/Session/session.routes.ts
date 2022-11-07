@@ -1,4 +1,4 @@
-import {Express, Request, Response} from "express";
+import {Express} from "express";
 import validate from "../middleware/validateResource";
 import requireUser from "../middleware/requireUser";
 import { createUserSessionHandler, deleteUserSessionHandler, getUserSessionsHandler } from "./session.controller";

@@ -15,11 +15,11 @@ export async function createUser(
 }
 
 export async function validatePassword({
-  email, password
+  username, password
 }: {
-  email: string, password: string
+  username: string, password: string
 }) {
-  const user = await UserModel.findOne({email});
+  const user = await UserModel.findOne({username});
 
   if(!user){
     return false;
