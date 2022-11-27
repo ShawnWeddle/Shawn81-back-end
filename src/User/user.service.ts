@@ -10,6 +10,7 @@ export async function createUser(
 
     return omit(user.toJSON(), "password");
   } catch (error: any) {
+    console.log(error);
     throw new Error(error);
   }
 }

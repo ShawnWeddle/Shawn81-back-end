@@ -3,15 +3,18 @@ import { CreateUserInput } from "./user.schema";
 import { createUser } from "./user.service";
 import logger from "../utils/logger";
 
+
 export async function createUserHandler(
   req: Request<{}, {}, CreateUserInput["body"]>,
   res: Response
  ) {
-  try{
+  try {
     const user = await createUser(req.body);
-    return res.send(user);
-  } catch(error: any){
-    logger.error(error);
-    return res.status(409).send(error.message);
+    return res.status(200).send(user);
+  } catch (error: any) {
+    if(error.message === "ValidationError: username: This username is already taken"){
+      return res.status(400).send({error: {type:"validationError", message: "This username is already taken"}});
+    }
+    return res.status(400).send({error});
   }
 }

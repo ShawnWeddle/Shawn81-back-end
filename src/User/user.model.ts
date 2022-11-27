@@ -15,8 +15,8 @@ export interface UserDocument extends UserInput, mongoose.Document {
 }
 
 const userSchema = new mongoose.Schema({
-  username: {type: String, required: true, unique: true},
-  password: {type: String, required: true}
+  username: {type: String, required: [true, "Username is required"], unique: [true, "This username is already taken"]},
+  password: {type: String, required: [true, "Password is required"]}
 },{
   timestamps: true
 });
@@ -32,6 +32,11 @@ userSchema.pre("save", async function(next){
   user.password = hash;
   return next();
 })
+
+userSchema.path("username").validate(async (username: string)=>{
+  const usernameCount = await mongoose.models.User.countDocuments({username});
+  return !usernameCount;
+}, "This username is already taken");
 
 userSchema.methods.comparePassword = async function(
   candidatePassword: string

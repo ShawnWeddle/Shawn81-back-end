@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { CreateMessageInput, UpdateMessageInput, ReadMessageInput, DeleteMessageInput } from "./message.schema";
-import { createMessage, deleteMessage, findMessage, findAndUpdateMessage, findAllMessages } from "./message.service";
+import { CreateMessageInput, UpdateMessageInput, ReadMessageInput, DeleteMessageInput, ReadMessageUsernameInput } from "./message.schema";
+import { createMessage, deleteMessage, findMessage, findAndUpdateMessage, findAllMessages, findMessageByUsername } from "./message.service";
 
 export async function createMessageHandler(
   req: Request<{}, {}, CreateMessageInput["body"]>, 
@@ -18,18 +18,34 @@ export async function createMessageHandler(
 }
 
 export async function getMessageHandler(
-  req: Request<ReadMessageInput["params"]>, 
+  req: Request<ReadMessageInput["idParams"]>, 
   res: Response
   ){
-    const messageId = req.params.msgId;
+    const messageId = req.params.messageId;
 
-    const message = await findMessage({messageId});
+    const message = await findMessage(messageId);
 
     if(!message){
       return res.sendStatus(404);
     }
 
     return res.send(message);
+}
+
+export async function getMessageByUsernameHandler(
+  req: Request<ReadMessageUsernameInput["usernameParams"]>, 
+  res: Response
+  ){
+    const username = req.params.username;
+
+    const message = await findMessage(username);
+
+    if(!message){
+      return res.sendStatus(404);
+    }
+
+    return res.send(message);
+
 }
 
 export async function getAllMessagesHandler(
@@ -46,36 +62,43 @@ export async function getAllMessagesHandler(
 }
 
 export async function updateMessageHandler(
-  req: Request<UpdateMessageInput["params"]>,
+  req: Request<UpdateMessageInput["idParams"]>,
   res: Response
   ){
     const userId = res.locals.user._id;
-    const messageId = req.params.msgId;
+    console.log(res.locals.user);
+    const messageId = req.params.messageId;
     const update = req.body;
 
-    const message = await findMessage({messageId});
+    console.log("messageId", messageId);
+
+    const message = await findMessage(messageId);
+
+    console.log(message);
 
     if(!message){
       return res.sendStatus(404);
     }
 
     if(String(message.user) !== userId){
+      console.log(String(message.user));
+      console.log(userId);
       return res.sendStatus(403);
     }
 
-    const updatedMessage = await findAndUpdateMessage({messageId}, update, {new: true});
+    const updatedMessage = await findAndUpdateMessage(messageId, update, {new: true});
 
     return res.send(updatedMessage);
 }
 
 export async function deleteMessageHandler(
-  req: Request<DeleteMessageInput["params"]>,
+  req: Request<DeleteMessageInput["idParams"]>,
   res: Response
   ) {
     const userId = res.locals.user._id;
-    const messageId = req.params.msgId;
+    const messageId = req.params.messageId;
 
-    const message = await findMessage({messageId});
+    const message = await findMessage(messageId);
 
     if(!message){
       return res.sendStatus(404);
@@ -85,7 +108,7 @@ export async function deleteMessageHandler(
       return res.sendStatus(403);
     }
 
-    await deleteMessage({messageId});
+    await deleteMessage(messageId);
 
     return res.sendStatus(200);
 }

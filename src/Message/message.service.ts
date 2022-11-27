@@ -6,10 +6,15 @@ export async function createMessage(input:MessageInput) {
 }
 
 export async function findMessage(
-  query:FilterQuery<MessageInput>,
-  options: QueryOptions = {lean: true}
+  query: string
   ) {
-  return MessageModel.findOne(query, {}, options);
+  return MessageModel.findById(query);
+}
+
+export async function findMessageByUsername(
+  query: FilterQuery<{username: string}>
+){
+  return MessageModel.findOne(query);
 }
 
 export async function findAllMessages() {
@@ -17,13 +22,13 @@ export async function findAllMessages() {
 }
 
 export async function findAndUpdateMessage(
-  query:FilterQuery<MessageInput>,
+  query: string,
   update: UpdateQuery<MessageInput>,
   options: QueryOptions
   ) {
-  return MessageModel.findOneAndUpdate(query, update, options);
+  return MessageModel.findByIdAndUpdate(query, update, options);
 }
 
-export async function deleteMessage(query: FilterQuery<MessageInput>) {
-  return MessageModel.deleteOne(query);
+export async function deleteMessage(query: string) {
+  return MessageModel.findByIdAndDelete(query);
 }

@@ -17,10 +17,18 @@ const payload = {
   })
 }
 
-const params = {
-  params: object({
-    msgId: string({
+const idParams = {
+  idParams: object({
+    messageId: string({
       required_error: "Message ID is required"
+    })
+  })
+}
+
+const usernameParams = {
+  usernameParams: object({
+    username: string({
+      required_error: "Username is required"
     })
   })
 }
@@ -31,18 +39,23 @@ export const createMessageSchema = object({
 
 export const updateMessageSchema = object({
   ...payload,
-  ...params
+  ...idParams
 });
 
 export const getMessageSchema = object({
-  ...params
+  ...idParams
+});
+
+export const getMessagebyUsernameSchema = object({
+  ...usernameParams
 });
 
 export const deleteMessageSchema = object({
-  ...params
+  ...idParams
 });
 
 export type CreateMessageInput = TypeOf<typeof createMessageSchema>;
 export type UpdateMessageInput = TypeOf<typeof updateMessageSchema>;
 export type ReadMessageInput = TypeOf<typeof getMessageSchema>;
+export type ReadMessageUsernameInput = TypeOf<typeof getMessagebyUsernameSchema>;
 export type DeleteMessageInput = TypeOf<typeof deleteMessageSchema>;

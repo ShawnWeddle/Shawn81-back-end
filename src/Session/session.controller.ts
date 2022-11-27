@@ -5,28 +5,39 @@ import { validatePassword } from "../User/user.service";
 import { signJwt } from "../utils/jwt.utils";
 
 export async function createUserSessionHandler(req: Request, res: Response){
-  const user = await validatePassword(req.body);
+  try {
+    const user = await validatePassword(req.body);
 
-  if(!user){
-    return res.status(401).send("Invalid username or password");
+    if(!user){
+      throw new Error("Invalid username or password");
+    }
+
+    const session = await createSession(user._id);
+
+    const accessToken = signJwt(
+      {...user, session: session._id },
+      {expiresIn: config.get("accessTokenTtl")} // 15m
+    );
+
+    const refreshToken = signJwt(
+      {...user, session: session._id },
+      {expiresIn: config.get("refreshTokenTtl")} // 1y
+    );
+
+    const username = user.username;
+
+    return res.send({ username, accessToken, refreshToken});
+
+  } catch (error: any) {
+    console.log(error);
+    if(error.message === "Invalid username or password"){
+      return res.status(401).send({error: {type:"loginError", message: "Invalid username or password"}});
+    }
+    return res.status(401).send({error: error.message});
   }
-
-  const session = await createSession(user._id);
-
-  const accessToken = signJwt(
-    {...user, session: session._id },
-    {expiresIn: config.get("accessTokenTtl")} // 15m
-  );
-
-  const refreshToken = signJwt(
-    {...user, session: session._id },
-    {expiresIn: config.get("refreshTokenTtl")} // 1y
-  );
-
-  const username = user.username;
-
-  return res.send({ username, accessToken, refreshToken});
 }
+
+  
 
 export async function getUserSessionsHandler(req: Request, res: Response){
   const userId = res.locals.user._id;
