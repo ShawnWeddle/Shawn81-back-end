@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { CreateMessageInput, UpdateMessageInput, ReadMessageInput, DeleteMessageInput, ReadMessageUsernameInput } from "./message.schema";
-import { createMessage, deleteMessage, findMessage, findAndUpdateMessage, findAllMessages, findMessageByUsername } from "./message.service";
+import { CreateMessageInput, UpdateMessageInput, ReadMessageInput, DeleteMessageInput } from "./message.schema";
+import { createMessage, deleteMessage, findMessage, findAndUpdateMessage, findAllMessages } from "./message.service";
 
 export async function createMessageHandler(
   req: Request<{}, {}, CreateMessageInput["body"]>, 
@@ -18,7 +18,7 @@ export async function createMessageHandler(
 }
 
 export async function getMessageHandler(
-  req: Request<ReadMessageInput["idParams"]>, 
+  req: Request<ReadMessageInput["params"]>, 
   res: Response
   ){
     const messageId = req.params.messageId;
@@ -30,22 +30,6 @@ export async function getMessageHandler(
     }
 
     return res.send(message);
-}
-
-export async function getMessageByUsernameHandler(
-  req: Request<ReadMessageUsernameInput["usernameParams"]>, 
-  res: Response
-  ){
-    const username = req.params.username;
-
-    const message = await findMessage(username);
-
-    if(!message){
-      return res.sendStatus(404);
-    }
-
-    return res.send(message);
-
 }
 
 export async function getAllMessagesHandler(
@@ -62,27 +46,20 @@ export async function getAllMessagesHandler(
 }
 
 export async function updateMessageHandler(
-  req: Request<UpdateMessageInput["idParams"]>,
+  req: Request<UpdateMessageInput["params"]>,
   res: Response
   ){
     const userId = res.locals.user._id;
-    console.log(res.locals.user);
     const messageId = req.params.messageId;
     const update = req.body;
 
-    console.log("messageId", messageId);
-
     const message = await findMessage(messageId);
-
-    console.log(message);
 
     if(!message){
       return res.sendStatus(404);
     }
 
     if(String(message.user) !== userId){
-      console.log(String(message.user));
-      console.log(userId);
       return res.sendStatus(403);
     }
 
@@ -92,7 +69,7 @@ export async function updateMessageHandler(
 }
 
 export async function deleteMessageHandler(
-  req: Request<DeleteMessageInput["idParams"]>,
+  req: Request<DeleteMessageInput["params"]>,
   res: Response
   ) {
     const userId = res.locals.user._id;

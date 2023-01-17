@@ -1,4 +1,4 @@
-import e, { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from "express";
 import { AnyZodObject, ZodError } from "zod";
 
 const validate = (schema: AnyZodObject) => (req: Request, res: Response, next: NextFunction) => {
@@ -12,11 +12,12 @@ const validate = (schema: AnyZodObject) => (req: Request, res: Response, next: N
   } catch(error: any){
     if(error instanceof ZodError){
       console.log("zoddy doddy");
+      console.log(error);
       res.status(400).send(error);
     } else {
-      console.log("01", error);
-      console.log("02", error.message);
+
     }
   }
 }
+
 export default validate;

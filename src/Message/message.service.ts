@@ -11,12 +11,6 @@ export async function findMessage(
   return MessageModel.findById(query);
 }
 
-export async function findMessageByUsername(
-  query: FilterQuery<{username: string}>
-){
-  return MessageModel.findOne(query);
-}
-
 export async function findAllMessages() {
   return MessageModel.find();
 }
