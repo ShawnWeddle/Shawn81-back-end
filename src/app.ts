@@ -16,7 +16,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:8000"
+    origin: "https://shawn81-front-end.onrender.com"
   })
 )
 
